@@ -30,6 +30,8 @@ ActiveRecord::Schema.define(version: 20200526181315) do
   end
 
   create_table "pairings", force: :cascade do |t|
+    t.integer  "mentor_id"
+    t.integer  "mentee_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
