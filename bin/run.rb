@@ -1,9 +1,23 @@
 require_relative '../config/environment'
-require 'tty-prompt'
+require 'pry'
 
+# DEFINED METHODS
 def clear_screen!
   puts "\e[H\e[2J"
 end
+
+
+# prompt = TTY::Prompt.new
+# puts "\e[H\e[2J"
+# menu = prompt.select("Welcome #{ entered_name }! Select one of the following menu options.") do |menu|
+# menu.choice 'View Pairings'
+# menu.choice 'Update Profile'
+
+
+# if menu == 'View Pairings'
+#   Pairing.all.map {|p| p.mentor.full_name == entered_name}
+# end
+
 
 def mentor_login
   clear_screen!
@@ -13,12 +27,14 @@ def mentor_login
   print "Full Name: "
 
   entered_name = gets.chomp
+  current_user = Mentor.find_by(full_name: entered_name)
 
   clear_screen!
-  puts "Welcome #{ entered_name }! Here is a list of all available mentees!"
-  puts
-  puts
-  puts Mentee.all
+  if current_user
+    puts "you are in the system."
+  else
+    puts "Sorry, not in the system."
+  end
 end
 
 def mentee_login
@@ -29,11 +45,14 @@ def mentee_login
   print "Full Name: "
   
   entered_name = gets.chomp
+  current_user = Mentee.find_by(full_name: entered_name)
+
   clear_screen!
-  puts "Welcome #{ entered_name }! Here is a list of all available mentors!"
-  puts
-  puts
-  puts Mentor.all
+  if current_user
+    puts "you are in the system."
+  else
+    puts "Sorry, not in the system."
+  end
 end
 
 prompt = TTY::Prompt.new
@@ -63,36 +82,3 @@ elsif welcome == 'Mentee'
   mentee_login
 end
 
-
-
-
-
-# clear_screen!
-# puts "Welcome to Hob-B-Line, please enter 'mentor' or 'mentee'."
-# puts
-# puts
-# print "You are a: "
-
-# while entered_role = gets.chomp
-#   case entered_role 
-#   when "mentor"
-#     break 
-#   when "mentee"
-#     break
-#   else 
-#     clear_screen!
-#     puts "Please input a valid role"
-#     puts
-#     print "You are a:"
-#   end 
-# end
-
-
-
-
-# else
-#   puts "Sorry, name was not found. Please re-enter with a valid name!"
-# end
-
-# puts
-# puts "HELLO WORLD"
