@@ -1,5 +1,4 @@
 require_relative '../config/environment'
-require 'pry'
 
 # DEFINED METHODS
 def clear_screen!
