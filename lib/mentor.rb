@@ -1,21 +1,8 @@
 class Mentor < ActiveRecord::Base
+    extend User::ClassMethods
+    include User::InstanceMethods
     has_many :pairings
     has_many :mentees, through: :pairings
-
-    def to_s
-      "#{ full_name }"
-    end
-
-    def self.press_any(current_user)
-      puts "Press 'enter' to continue."  
-          if gets.chomp != nil 
-            self.user_menu(current_user)
-          end  
-    end
-
-    def self.find_user(entered_name) 
-      self.find_by(full_name: entered_name)
-    end 
   
     def self.user_menu(current_user)
       clear_screen!
@@ -73,7 +60,7 @@ class Mentor < ActiveRecord::Base
 
     def self.mentor_login
       clear_screen!
-      puts "Hello Mentor! Please enter your full name below!"
+      puts "Hello #{self.class}! Please enter your full name below!"
       puts
       puts
       print "Full Name: "

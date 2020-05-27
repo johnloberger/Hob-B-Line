@@ -1,22 +1,38 @@
+require 'pry'
+
 class Mentee < ActiveRecord::Base
+    extend User::ClassMethods
+    include User::InstanceMethods
     has_many :pairings
     has_many :mentors, through: :pairings
-
-  def to_s
-    "#{ full_name }"
-  end
-
-  def self.press_any(current_user)
-    puts "Press 'enter' to continue."  
-        if gets.chomp != nil 
-          self.user_menu(current_user)
-        end  
-  end
-
-  def self.find_user(entered_name) 
-    self.find_by(full_name: entered_name)
+    
+    
+  def self.create_pairing(current_user) 
+    my_compatible_mentors = self.find_compatible_mentors(current_user)
+    my_compatible_mentors_names = my_compatible_mentors.map &:full_name
+    puts my_compatible_mentors 
+    puts 
+    puts "Please enter the full name of the mentor you would like to be paired with."
+    print "Full Name: "
+    mentor_choice = gets.chomp
+    if my_compatible_mentors_names.include?(mentor_choice) == false
+      clear_screen!
+      puts "Please enter one of the below names."
+      self.create_pairing(current_user)
+    end 
+    pairing_mentor = my_compatible_mentors.find do |mentor|
+      mentor.full_name == mentor_choice
+    end 
+    new_pairing = Pairing.create(mentor: pairing_mentor, mentee: current_user)
+    puts "Congratulations!  You have been paired with #{mentor_choice}!"
   end 
-
+  
+  def self.find_compatible_mentors(current_user)
+    Mentor.all.select do |mentor|
+        mentor.favorite_hobby == current_user.favorite_hobby && current_user.mentor_ids.include?(mentor.id) == false 
+    end 
+  end 
+  
   def self.user_menu(current_user)
     clear_screen!
     prompt = TTY::Prompt.new
@@ -28,10 +44,10 @@ class Mentee < ActiveRecord::Base
     end
 
     if menu_option == 'See My Mentors'
-      current_user.mentors 
+      puts current_user.mentors 
       self.press_any(current_user)
     elsif menu_option == 'Create a Pairing'
-      #method needed here
+      create_pairing(current_user)
       0
     elsif menu_option == 'Change My Hobby'
       puts "Please enter your new favorite hobby."
@@ -42,6 +58,8 @@ class Mentee < ActiveRecord::Base
     end  
   end 
 
+  
+  
   def self.create_user 
     new_user = Mentee.new
     puts "Enter your full name to begin."
