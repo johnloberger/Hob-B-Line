@@ -39,6 +39,7 @@ class Mentee < ActiveRecord::Base
     menu_option = prompt.select("This is the menu:") do |menu|
       menu.choice 'See My Mentors'
       menu.choice 'Create a Pairing'
+      menu.choice 'Delete a Pairing'
       menu.choice 'Change My Hobby'
       menu.choice 'Exit'
     end
@@ -48,11 +49,13 @@ class Mentee < ActiveRecord::Base
       self.press_any(current_user)
     elsif menu_option == 'Create a Pairing'
       create_pairing(current_user)
-      0
+    elsif menu_option == 'Delete a Pairing'
+      self.delete_pairing(current_user)
     elsif menu_option == 'Change My Hobby'
       puts "Please enter your new favorite hobby."
       current_user.favorite_hobby = gets.chomp 
       puts "Your new favorite hobby is #{current_user.favorite_hobby}!"
+      current_user.save
     else
       exit 
     end  
@@ -112,5 +115,27 @@ class Mentee < ActiveRecord::Base
       self.create_user
     end
   end
+
+  def self.delete_pairing(current_user)
+    puts current_user.mentors 
+    puts 
+    puts "Please enter the full name of the mentor you would like to no longer be paired with."
+    puts
+    print "Full Name: "
+    deleted_partner = gets.chomp
+    pairing_to_delete = Pairing.all.find do |pairing|
+      pairing.mentee == current_user && pairing.mentor.full_name == deleted_partner
+    end
+    if pairing_to_delete == nil
+      clear_screen!
+      puts "Sorry, please enter one of the names below."
+      self.delete_pairing(current_user)
+    end
+    Pairing.delete(pairing_to_delete.id)
+    clear_screen!
+    puts "You are no longer paired with #{ deleted_partner }. Please log back in!"
+    exit
+  end
+
 
 end
