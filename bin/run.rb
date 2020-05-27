@@ -6,19 +6,19 @@ def clear_screen!
 end
 
 def mentor_login
-clear_screen!
-puts "Hello Mentor! Please enter your full name below!"
-puts
-puts
-print "Full Name: "
+  clear_screen!
+  puts "Hello Mentor! Please enter your full name below!"
+  puts
+  puts
+  print "Full Name: "
 
-entered_name = gets.chomp
+  entered_name = gets.chomp
 
-clear_screen!
-puts "Welcome #{ entered_name }! Here is a list of all available mentees!"
-puts
-puts
-puts Mentee.all
+  clear_screen!
+  puts "Welcome #{ entered_name }! Here is a list of all available mentees!"
+  puts
+  puts
+  puts Mentee.all
 end
 
 def mentee_login
@@ -29,16 +29,30 @@ def mentee_login
   print "Full Name: "
   
   entered_name = gets.chomp
-clear_screen!
-puts "Welcome #{ entered_name }! Here is a list of all available mentors!"
-puts
-puts
-puts Mentor.all
+  clear_screen!
+  puts "Welcome #{ entered_name }! Here is a list of all available mentors!"
+  puts
+  puts
+  puts Mentor.all
 end
 
 prompt = TTY::Prompt.new
 puts "\e[H\e[2J"
-welcome = prompt.select("Please select your role") do |menu|
+welcome = prompt.select("
+                  ┬ ┬┌─┐┬  ┌─┐┌─┐┌┬┐┌─┐  ┌┬┐┌─┐  ┌┬┐┬ ┬┌─┐
+                  │││├┤ │  │  │ ││││├┤    │ │ │   │ ├─┤├┤ 
+                  └┴┘└─┘┴─┘└─┘└─┘┴ ┴└─┘   ┴ └─┘   ┴ ┴ ┴└─┘
+ \n
+ ██╗  ██╗ ██████╗ ██████╗       ██████╗       ██╗     ██╗███╗   ██╗███████╗
+ ██║  ██║██╔═══██╗██╔══██╗      ██╔══██╗      ██║     ██║████╗  ██║██╔════╝
+ ███████║██║   ██║██████╔╝█████╗██████╔╝█████╗██║     ██║██╔██╗ ██║█████╗  
+ ██╔══██║██║   ██║██╔══██╗╚════╝██╔══██╗╚════╝██║     ██║██║╚██╗██║██╔══╝  
+ ██║  ██║╚██████╔╝██████╔╝      ██████╔╝      ███████╗██║██║ ╚████║███████╗
+ ╚═╝  ╚═╝ ╚═════╝ ╚═════╝       ╚═════╝       ╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝
+ \n
+ ───────────────────────────────────────────────────────────────────────────
+ \n                                                           
+ Please select your role:") do |menu|
   menu.choice 'Mentor'
   menu.choice 'Mentee'
 end
