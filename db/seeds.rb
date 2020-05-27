@@ -12,3 +12,5 @@ sully = Mentee.create(full_name: "Sully Bluemonster", age: 24, gender: "male", f
 # pairing_one.mentor = steven 
 # pairing_one.mentee = sully
 pairing_two = Pairing.create(mentor: steven, mentee: mike)
+pairing_three = Pairing.create(mentor: john, mentee: sully)
+pairing_four = Pairing.create(mentor: john, mentee: mike)

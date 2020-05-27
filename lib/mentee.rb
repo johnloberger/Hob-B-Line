@@ -3,7 +3,14 @@ class Mentee < ActiveRecord::Base
     has_many :mentors, through: :pairings
 
   def to_s
-    "#{ full_name } loves to #{ favorite_hobby }"
+    "#{ full_name }"
+  end
+
+  def self.press_any(current_user)
+    puts "Press 'enter' to continue."  
+        if gets.chomp != nil 
+          self.user_menu(current_user)
+        end  
   end
 
   def self.find_user(entered_name) 
@@ -12,7 +19,6 @@ class Mentee < ActiveRecord::Base
 
   def self.user_menu(current_user)
     clear_screen!
-    puts "This is the menu."
     prompt = TTY::Prompt.new
     menu_option = prompt.select("This is the menu:") do |menu|
       menu.choice 'See My Mentors'
@@ -23,16 +29,14 @@ class Mentee < ActiveRecord::Base
 
     if menu_option == 'See My Mentors'
       current_user.mentors 
-      self.user_menu(current_user)
+      self.press_any(current_user)
     elsif menu_option == 'Create a Pairing'
       #method needed here
       0
-      self.user_menu(current_user)
     elsif menu_option == 'Change My Hobby'
       puts "Please enter your new favorite hobby."
       current_user.favorite_hobby = gets.chomp 
       puts "Your new favorite hobby is #{current_user.favorite_hobby}!"
-      self.user_menu(current_user)
     else
       exit 
     end  
@@ -55,6 +59,10 @@ class Mentee < ActiveRecord::Base
     puts "Enter your location."
     print "Location: "
     new_user.gender = gets.chomp 
+    puts
+    puts "Enter your hobby."
+    print "Hobby: "
+    new_user.favorite_hobby = gets.chomp
     if new_user.age < 18
       puts
       puts "Please enter the name of a parent or guardian."
@@ -64,7 +72,7 @@ class Mentee < ActiveRecord::Base
     new_user.save
     puts "Welcome #{new_user.full_name}!  Press any key to continue." 
     if gets.chomp != nil 
-      self.user_menu
+      self.user_menu(current_user)
     end  
     self.user_menu(current_user)
   end 

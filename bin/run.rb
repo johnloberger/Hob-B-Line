@@ -6,6 +6,7 @@ def clear_screen!
   puts "\e[H\e[2J"
 end
 
+
 prompt = TTY::Prompt.new
 puts "\e[H\e[2J"
 welcome = prompt.select("
