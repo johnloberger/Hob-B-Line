@@ -46,7 +46,15 @@ class Mentor < ActiveRecord::Base
     puts
     puts "Enter your age."
     print "Age: "
-    new_user.age = gets.chomp
+    age = gets.chomp
+    leftovers = age.slice(/./)
+    age = age.to_i
+    until age >= 10
+      puts "Please enter a valid age. You must be 10 years or older to use this website."
+      print "Age: "
+      age = gets.chomp 
+    end 
+    new_user.age = age
     puts
     puts "Enter your gender."
     print "Gender: "
