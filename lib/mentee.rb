@@ -9,6 +9,11 @@ class Mentee < ActiveRecord::Base
     
   def self.create_pairing(current_user) 
     my_compatible_mentors = self.find_compatible_mentors(current_user)
+    if my_compatible_mentors == []
+      puts "Sorry! There are currently no mentors with the hobby: #{current_user.favorite_hobby}."
+      puts
+      self.press_any(current_user)
+    end
     my_compatible_mentors_names = my_compatible_mentors.map &:full_name
     puts my_compatible_mentors 
     puts 
@@ -25,6 +30,7 @@ class Mentee < ActiveRecord::Base
     end 
     new_pairing = Pairing.create(mentor: pairing_mentor, mentee: current_user)
     puts "Congratulations! You have been paired with #{mentor_choice}!"
+    puts
     current_user.reload
     self.press_any(current_user)
   end 
@@ -52,6 +58,7 @@ class Mentee < ActiveRecord::Base
 
     if menu_option == 'See My Mentors'
       puts current_user.mentors 
+      puts
       self.press_any(current_user)
     elsif menu_option == 'Create a Pairing'
       create_pairing(current_user)
@@ -65,6 +72,7 @@ class Mentee < ActiveRecord::Base
       current_user.save
       current_user.reload
       puts "Your new favorite hobby is #{current_user.favorite_hobby}! Please press enter to return to menu."
+      puts
       self.press_any(current_user)
     else
       exit 
@@ -82,12 +90,12 @@ class Mentee < ActiveRecord::Base
     puts "Enter your age."
     print "Age: "
     age = gets.chomp
-    leftovers = age.slice(/./)
     age = age.to_i
-    until age >= 10
+    while Float === age || String === age || age <= 10 do
       puts "Please enter a valid age. You must be 10 years or older to use this website."
       print "Age: "
       age = gets.chomp 
+      age = age.to_i
     end 
     new_user.age = age
     puts
@@ -117,7 +125,8 @@ class Mentee < ActiveRecord::Base
   def self.mentee_login
     clear_screen!
     prompt = TTY::Prompt.new
-    login_menu = prompt.select("Please log-in below or create a new account.") do |menu|
+    login_menu = prompt.select("Please log-in below or create a new account.
+    \n") do |menu|
     menu.choice 'Log-In'
     menu.choice 'Create Account'
   end
@@ -170,6 +179,7 @@ class Mentee < ActiveRecord::Base
     current_user.reload
     clear_screen!
     puts "You are no longer paired with #{ deleted_partner }. Please press enter to return to menu."
+    puts
     self.press_any(current_user)
   end
 
