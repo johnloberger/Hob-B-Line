@@ -14,7 +14,7 @@ module User
             puts "Press 'enter' to continue."  
                 if gets.chomp != nil 
                     self.user_menu(current_user)
-                end  
+                end      
         end
     
         def find_user(entered_name) 

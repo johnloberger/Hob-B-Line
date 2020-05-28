@@ -8,7 +8,11 @@ class Mentor < ActiveRecord::Base
   def self.user_menu(current_user)
     clear_screen!
     prompt = TTY::Prompt.new
-    menu_option = prompt.select("This is the menu:") do |menu|
+    menu_option = prompt.select("
+    Welcome #{ current_user.full_name }!
+    \n
+    Please select an option below:
+    \n") do |menu|
       menu.choice 'See My Mentees'
       menu.choice 'Delete a Pairing'
       menu.choice 'Change My Hobby'
@@ -50,58 +54,77 @@ class Mentor < ActiveRecord::Base
     puts
     puts "Enter your location."
     print "Location: "
-      new_user.gender = gets.chomp 
-      puts
-      puts "Enter your hobby."
-      print "Hobby: "
-      new_user.favorite_hobby = gets.chomp
-      new_user.save
-      puts "Welcome #{new_user.full_name}!  Press any key to continue." 
-      if gets.chomp != nil 
-        self.user_menu(current_user)
-      end  
-      self.user_menu(current_user)
-    end 
+    new_user.location = gets.chomp 
+    puts
+    puts "Enter your hobby."
+    print "Hobby: "
+    new_user.favorite_hobby = gets.chomp
+    new_user.save
+    puts "Press any key to continue." 
+    current_user = new_user
+    clear_screen!
+    puts "Welcome #{ new_user.full_name }!"
+    self.press_any(current_user)
+  end 
     
-    def self.mentor_login
+  def self.mentor_login
+    clear_screen!
+    prompt = TTY::Prompt.new
+    login_menu = prompt.select("Please log-in below or create a new account.") do |menu|
+    menu.choice 'Log-In'
+    menu.choice 'Create Account'
+  end
+
+    if login_menu == 'Log-In'
+      self.user_login
+    elsif login_menu == 'Create Account'
       clear_screen!
-      puts "Hello #{self.class}! Please enter your full name below!"
-      puts
+      self.create_user
+    end
+  end
+
+  def self.user_login
+    clear_screen!
+    puts "Hello Mentor! Please enter your full name below!"
+    puts
+    puts
+    print "Full Name: "
+      
+    entered_name = gets.chomp
+    current_user = self.find_user(entered_name)
+      
+    while !current_user do
+      clear_screen!
+      puts "Please enter a valid name."
       puts
       print "Full Name: "
-      
       entered_name = gets.chomp
       current_user = self.find_user(entered_name)
-      
-      clear_screen!
-      if current_user
-        self.user_menu(current_user)
-      else
-        self.create_user
-      end
     end
-    
-    def self.delete_pairing(current_user)
-      puts current_user.mentees 
-      puts 
-      puts "Please enter the full name of the mentee you would like to no longer be paired with."
-      puts
-      print "Full Name: "
-      deleted_partner = gets.chomp
-      pairing_to_delete = Pairing.all.find do |pairing|
-        pairing.mentor == current_user && pairing.mentee.full_name == deleted_partner
-      end
-      if pairing_to_delete == nil
-        clear_screen!
-        puts "Sorry, please enter one of the names below."
-        self.delete_pairing(current_user)
-      end
-      Pairing.destroy(pairing_to_delete.id)
-      current_user.reload
-      clear_screen!
-      puts "You are no longer paired with #{ deleted_partner }. Please press enter to return to menu."
-      self.press_any(current_user)
-    end
-    
-    
+    self.user_menu(current_user)
   end
+    
+  def self.delete_pairing(current_user)
+    puts current_user.mentees 
+    puts 
+    puts "Please enter the full name of the mentee you would like to no longer be paired with."
+    puts
+    print "Full Name: "
+    deleted_partner = gets.chomp
+    pairing_to_delete = Pairing.all.find do |pairing|
+    pairing.mentor == current_user && pairing.mentee.full_name == deleted_partner
+    end
+    if pairing_to_delete == nil
+      clear_screen!
+      puts "Sorry, please enter one of the names below."
+      self.delete_pairing(current_user)
+    end
+    Pairing.destroy(pairing_to_delete.id)
+    current_user.reload
+    clear_screen!
+    puts "You are no longer paired with #{ deleted_partner }. Please press enter to return to menu."
+    self.press_any(current_user)
+  end
+    
+    
+end
