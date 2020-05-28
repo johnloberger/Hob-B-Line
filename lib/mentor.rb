@@ -20,29 +20,31 @@ class Mentor < ActiveRecord::Base
     end
   
     if menu_option == 'See My Mentees'
-      if current_user.mentees == []
-        puts "Sorry. You currently don't have any mentees."
-        puts
-      else
-        puts current_user.mentees 
-        puts
-      end 
-      self.press_any(current_user)
+      self.see_my_mentees(current_user)
     elsif menu_option == 'Delete a Pairing'
       self.delete_pairing(current_user)
     elsif menu_option == 'Change My Hobby'
-      puts "Please enter your new favorite hobby."
-      puts
-      print "Favorite Hobby: "
-      current_user.favorite_hobby = gets.chomp 
-      current_user.save
-      current_user.reload
-      puts "Your new favorite hobby is #{current_user.favorite_hobby}! Please press enter to return to menu."
-      puts
-      self.press_any(current_user)
+      self.change_my_hobby(current_user)
     else
+      clear_screen!
+      puts "Goodbye #{current_user.full_name}!  Enjoy #{current_user.favorite_hobby}!"
+      puts
       exit 
     end  
+  end 
+
+  def self.see_my_mentees(current_user)
+    clear_screen!
+    if current_user.mentees == []
+      puts "Sorry. You currently don't have any mentees."
+      puts
+    else
+      puts "These are your mentees:"
+      puts
+      puts current_user.mentees
+      puts
+    end 
+    self.press_any(current_user)
   end 
   
   def self.create_user 
@@ -55,8 +57,8 @@ class Mentor < ActiveRecord::Base
     print "Age: "
     age = gets.chomp
     age = age.to_i
-    while Float === age || String === age || age <= 10 do
-      puts "Please enter a valid age. You must be 10 years or older to use this website."
+    while Float === age || String === age || age < 18 do
+      puts "Please enter a valid age. You must be 18 years or older to use this website."
       print "Age: "
       age = gets.chomp 
       age = age.to_i
@@ -122,27 +124,30 @@ class Mentor < ActiveRecord::Base
   end
     
   def self.delete_pairing(current_user)
+    clear_screen!
     puts current_user.mentees 
     puts 
-    puts "Please enter the full name of the mentee you would like to no longer be paired with."
+    puts "Please enter the full name of the mentee you would like to no longer be paired with or type 'exit' to return to the menu."
     puts
     print "Full Name: "
     deleted_partner = gets.chomp
-    pairing_to_delete = Pairing.all.find do |pairing|
-    pairing.mentor == current_user && pairing.mentee.full_name == deleted_partner
-    end
-    if pairing_to_delete == nil
+    if deleted_partner == "exit"
+      self.user_menu(current_user)
+    end 
+    deleted_mentee = Mentee.all.select do |mentee|
+      mentee.full_name == deleted_partner 
+    end 
+    if deleted_mentee == nil
       clear_screen!
       puts "Sorry, please enter one of the names below."
       self.delete_pairing(current_user)
     end
-    Pairing.destroy(pairing_to_delete.id)
+    current_user.mentees -= deleted_mentee
     current_user.reload
     clear_screen!
     puts "You are no longer paired with #{ deleted_partner }. Please press enter to return to menu."
     puts
     self.press_any(current_user)
   end
-    
-    
+      
 end
