@@ -22,9 +22,13 @@ class Mentor < ActiveRecord::Base
       self.delete_pairing(current_user)
     elsif menu_option == 'Change My Hobby'
       puts "Please enter your new favorite hobby."
+      puts
+      print "Favorite Hobby: "
       current_user.favorite_hobby = gets.chomp 
-      puts "Your new favorite hobby is #{current_user.favorite_hobby}!"
       current_user.save
+      current_user.reload
+      puts "Your new favorite hobby is #{current_user.favorite_hobby}! Please press enter to return to menu."
+      self.press_any(current_user)
     else
       exit 
     end  
@@ -92,10 +96,11 @@ class Mentor < ActiveRecord::Base
         puts "Sorry, please enter one of the names below."
         self.delete_pairing(current_user)
       end
-      Pairing.delete(pairing_to_delete.id)
+      Pairing.destroy(pairing_to_delete.id)
+      current_user.reload
       clear_screen!
-      puts "You are no longer paired with #{ deleted_partner }. Please log back in!"
-      exit
+      puts "You are no longer paired with #{ deleted_partner }. Please press enter to return to menu."
+      self.press_any(current_user)
     end
     
     
