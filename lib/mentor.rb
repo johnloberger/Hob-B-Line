@@ -145,6 +145,12 @@ class Mentor < ActiveRecord::Base
     current_user.mentees -= deleted_mentee
     current_user.reload
     clear_screen!
+    bar = TTY::ProgressBar.new("Deleting [:bar]", total: 30)
+      30.times do
+      sleep(0.05)
+      bar.advance(1)
+    end
+    puts
     puts "You are no longer paired with #{ deleted_partner }. Please press enter to return to menu."
     puts
     self.press_any(current_user)

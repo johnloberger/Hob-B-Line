@@ -1,4 +1,5 @@
 require 'tty-prompt'
+require 'tty-progressbar'
 require 'bundler'
 Bundler.require
 
