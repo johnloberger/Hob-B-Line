@@ -34,6 +34,12 @@ class Mentee < ActiveRecord::Base
       mentor.full_name == mentor_choice
     end 
     current_user.mentors << pairing_mentor
+    clear_screen!
+    bar = TTY::ProgressBar.new("Pairing [:bar]", total: 30)
+      30.times do
+      sleep(0.05)
+      bar.advance(1)
+    end
     puts
     puts "Congratulations! You have been paired with #{mentor_choice}!"
     puts
@@ -195,6 +201,12 @@ class Mentee < ActiveRecord::Base
     current_user.mentors -= deleted_mentor
     current_user.reload
     clear_screen!
+    bar = TTY::ProgressBar.new("Deleting [:bar]", total: 30)
+      30.times do
+      sleep(0.05)
+      bar.advance(1)
+    end
+    puts
     puts "You are no longer paired with #{ deleted_partner }. Please press enter to return to menu."
     puts
     self.press_any(current_user)
