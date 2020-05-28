@@ -21,6 +21,7 @@ class Mentor < ActiveRecord::Base
   
     if menu_option == 'See My Mentees'
       puts current_user.mentees
+      puts
       self.press_any(current_user)
     elsif menu_option == 'Delete a Pairing'
       self.delete_pairing(current_user)
@@ -32,6 +33,7 @@ class Mentor < ActiveRecord::Base
       current_user.save
       current_user.reload
       puts "Your new favorite hobby is #{current_user.favorite_hobby}! Please press enter to return to menu."
+      puts
       self.press_any(current_user)
     else
       exit 
@@ -47,12 +49,12 @@ class Mentor < ActiveRecord::Base
     puts "Enter your age."
     print "Age: "
     age = gets.chomp
-    leftovers = age.slice(/./)
     age = age.to_i
-    until age >= 10
+    while Float === age || String === age || age <= 10 do
       puts "Please enter a valid age. You must be 10 years or older to use this website."
       print "Age: "
       age = gets.chomp 
+      age = age.to_i
     end 
     new_user.age = age
     puts
@@ -72,13 +74,15 @@ class Mentor < ActiveRecord::Base
     current_user = new_user
     clear_screen!
     puts "Welcome #{ new_user.full_name }!"
+    puts
     self.press_any(current_user)
   end 
     
   def self.mentor_login
     clear_screen!
     prompt = TTY::Prompt.new
-    login_menu = prompt.select("Please log-in below or create a new account.") do |menu|
+    login_menu = prompt.select("Please log-in below or create a new account.
+    \n") do |menu|
     menu.choice 'Log-In'
     menu.choice 'Create Account'
   end
@@ -131,6 +135,7 @@ class Mentor < ActiveRecord::Base
     current_user.reload
     clear_screen!
     puts "You are no longer paired with #{ deleted_partner }. Please press enter to return to menu."
+    puts
     self.press_any(current_user)
   end
     
