@@ -81,7 +81,15 @@ class Mentee < ActiveRecord::Base
     puts
     puts "Enter your age."
     print "Age: "
-    new_user.age = gets.chomp
+    age = gets.chomp
+    leftovers = age.slice(/./)
+    age = age.to_i
+    until age >= 10
+      puts "Please enter a valid age. You must be 10 years or older to use this website."
+      print "Age: "
+      age = gets.chomp 
+    end 
+    new_user.age = age
     puts
     puts "Enter your gender."
     print "Gender: "
@@ -102,7 +110,7 @@ class Mentee < ActiveRecord::Base
     end 
     new_user.save
     puts "Welcome #{new_user.full_name}!  Press any key to continue." 
-    new_user = current_user
+    current_user = new_user
     self.press_any(current_user)
   end 
 
