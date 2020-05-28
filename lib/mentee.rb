@@ -24,7 +24,9 @@ class Mentee < ActiveRecord::Base
       mentor.full_name == mentor_choice
     end 
     new_pairing = Pairing.create(mentor: pairing_mentor, mentee: current_user)
-    puts "Congratulations!  You have been paired with #{mentor_choice}!"
+    puts "Congratulations! You have been paired with #{mentor_choice}!"
+    current_user.reload
+    self.press_any(current_user)
   end 
   
   def self.find_compatible_mentors(current_user)
@@ -36,7 +38,11 @@ class Mentee < ActiveRecord::Base
   def self.user_menu(current_user)
     clear_screen!
     prompt = TTY::Prompt.new
-    menu_option = prompt.select("This is the menu:") do |menu|
+    menu_option = prompt.select("
+    Welcome #{ current_user.full_name }!
+    \n
+    Please select an option below:
+    \n") do |menu|
       menu.choice 'See My Mentors'
       menu.choice 'Create a Pairing'
       menu.choice 'Delete a Pairing'
@@ -83,7 +89,7 @@ class Mentee < ActiveRecord::Base
     puts
     puts "Enter your location."
     print "Location: "
-    new_user.gender = gets.chomp 
+    new_user.location = gets.chomp 
     puts
     puts "Enter your hobby."
     print "Hobby: "
@@ -96,28 +102,45 @@ class Mentee < ActiveRecord::Base
     end 
     new_user.save
     puts "Welcome #{new_user.full_name}!  Press any key to continue." 
-    if gets.chomp != nil 
-      self.user_menu(current_user)
-    end  
-    self.user_menu(current_user)
+    new_user = current_user
+    self.press_any(current_user)
   end 
 
   def self.mentee_login
+    clear_screen!
+    prompt = TTY::Prompt.new
+    login_menu = prompt.select("Please log-in below or create a new account.") do |menu|
+    menu.choice 'Log-In'
+    menu.choice 'Create Account'
+  end
+
+    if login_menu == 'Log-In'
+      self.user_login
+    elsif login_menu == 'Create Account'
+      clear_screen!
+      self.create_user
+    end
+  end
+
+  def self.user_login
     clear_screen!
     puts "Hello Mentee! Please enter your full name below!"
     puts
     puts
     print "Full Name: "
-    
+      
     entered_name = gets.chomp
     current_user = self.find_user(entered_name)
-  
-    clear_screen!
-    if current_user
-      self.user_menu(current_user)
-    else
-      self.create_user
+      
+    while !current_user do
+      clear_screen!
+      puts "Please enter a valid name."
+      puts
+      print "Full Name: "
+      entered_name = gets.chomp
+      current_user = self.find_user(entered_name)
     end
+    self.user_menu(current_user)
   end
 
   def self.delete_pairing(current_user)
