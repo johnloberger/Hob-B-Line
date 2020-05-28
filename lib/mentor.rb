@@ -20,8 +20,13 @@ class Mentor < ActiveRecord::Base
     end
   
     if menu_option == 'See My Mentees'
-      puts current_user.mentees
-      puts
+      if current_user.mentees == []
+        puts "Sorry. You currently don't have any mentees."
+        puts
+      else
+        puts current_user.mentees 
+        puts
+      end 
       self.press_any(current_user)
     elsif menu_option == 'Delete a Pairing'
       self.delete_pairing(current_user)

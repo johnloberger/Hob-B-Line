@@ -57,8 +57,13 @@ class Mentee < ActiveRecord::Base
     end
 
     if menu_option == 'See My Mentors'
-      puts current_user.mentors 
-      puts
+      if current_user.mentors == []
+        puts "Sorry. You currently don't have any mentors."
+        puts
+      else
+        puts current_user.mentors 
+        puts
+      end 
       self.press_any(current_user)
     elsif menu_option == 'Create a Pairing'
       create_pairing(current_user)
