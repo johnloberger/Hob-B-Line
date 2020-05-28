@@ -22,6 +22,7 @@ class Mentor < ActiveRecord::Base
     if menu_option == 'See My Mentees'
       self.see_my_mentees(current_user)
     elsif menu_option == 'Delete a Pairing'
+      clear_screen!
       self.delete_pairing(current_user)
     elsif menu_option == 'Change My Hobby'
       self.change_my_hobby(current_user)
@@ -124,7 +125,6 @@ class Mentor < ActiveRecord::Base
   end
     
   def self.delete_pairing(current_user)
-    clear_screen!
     puts current_user.mentees 
     puts 
     puts "Please enter the full name of the mentee you would like to no longer be paired with or type 'exit' to return to the menu."
@@ -137,9 +137,10 @@ class Mentor < ActiveRecord::Base
     deleted_mentee = Mentee.all.select do |mentee|
       mentee.full_name == deleted_partner 
     end 
-    if deleted_mentee == nil
+    if deleted_mentee == []
       clear_screen!
       puts "Sorry, please enter one of the names below."
+      puts
       self.delete_pairing(current_user)
     end
     current_user.mentees -= deleted_mentee
