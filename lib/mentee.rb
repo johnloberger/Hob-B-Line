@@ -8,7 +8,8 @@ class Mentee < ActiveRecord::Base
   def self.create_pairing(current_user) 
     my_compatible_mentors = self.find_compatible_mentors(current_user)
     if my_compatible_mentors == []
-      puts "Sorry! There are currently no mentors with the hobby: #{current_user.favorite_hobby}."
+      pastel = Pastel.new
+      puts pastel.bright_red("Sorry! There are currently no mentors with the hobby: #{current_user.favorite_hobby}.")
       puts
       self.press_any(current_user)
     end
@@ -16,7 +17,6 @@ class Mentee < ActiveRecord::Base
     puts "These mentors have the same favorite hobby as you:"
     puts
     puts my_compatible_mentors 
-    puts 
     puts "Please enter the full name of the mentor you would like to be paired with or type 'exit'"
     puts
     print "Full Name: "
@@ -26,7 +26,8 @@ class Mentee < ActiveRecord::Base
     end 
     if my_compatible_mentors_names.include?(mentor_choice) == false
       clear_screen!
-      puts "Please enter one of the below names."
+      pastel = Pastel.new
+      puts pastel.bright_red("Please enter one of the below names.")
       puts
       self.create_pairing(current_user)
     end 
@@ -45,7 +46,8 @@ class Mentee < ActiveRecord::Base
       bar.advance(1)
     end
     puts
-    puts "Congratulations! Your pairing with #{mentor_choice} is now pending!"
+    pastel = Pastel.new
+    puts pastel.bright_green("Congratulations! Your pairing with #{mentor_choice} is now pending!")
     puts
     current_user.reload
     self.press_any(current_user)
@@ -125,15 +127,14 @@ class Mentee < ActiveRecord::Base
       sleep(1)
       spinner.stop('Done!')
       clear_screen!
-    approved_pairings = current_user.pairings.where("status = 'Pending'")
+    pending_pairings = current_user.pairings.where("status = 'Pending'")
     if approved_pairings == []
       puts "You don't have any pending mentors."
       puts
     else
       puts "These are your pending mentors:"
       puts
-      puts approved_pairings.map &:mentor
-      puts
+      puts pending_pairings.map &:mentor
     end 
     self.press_any(current_user)
   end 
@@ -156,7 +157,6 @@ class Mentee < ActiveRecord::Base
       puts "These are your approved mentors:"
       puts
       puts approved_pairings.map &:mentor
-      puts
     end 
     self.press_any(current_user)
   end 
@@ -175,7 +175,8 @@ class Mentee < ActiveRecord::Base
     age = age.to_i
     while Float === age || String === age || age < 1 do
       puts
-      puts "Please enter a valid age."
+      pastel = Pastel.new
+      puts pastel.bright_red("Please enter a valid age.")
       puts
       print "Age: "
       age = gets.chomp 
@@ -183,7 +184,8 @@ class Mentee < ActiveRecord::Base
     end 
     if age < 10
       puts
-      puts "You must be 10 years or older to be a mentee on this website."
+      pastel = Pastel.new
+      puts pastel.bright_red("You must be 10 years or older to be a mentee on this website.")
       puts "Please come back in #{10 - age} years!"
       puts
       exit 
@@ -212,7 +214,8 @@ class Mentee < ActiveRecord::Base
       new_user.guardian_contact = gets.chomp
     end 
     new_user.save
-    puts "Welcome #{new_user.full_name}! Your account has been created." 
+    pastel = Pastel.new
+    puts pastel.bright_green("Welcome #{new_user.full_name}! Your account has been created.") 
     puts
     current_user = new_user
     self.press_any(current_user)
@@ -247,7 +250,8 @@ class Mentee < ActiveRecord::Base
       
     while !current_user do
       clear_screen!
-      puts "Please enter a valid name."
+      pastel = Pastel.new
+      puts pastel.bright_red("Please enter a valid name.")
       puts
       print "Full Name: "
       entered_name = gets.chomp
@@ -276,7 +280,8 @@ class Mentee < ActiveRecord::Base
     end 
     if deleted_mentor == []
       clear_screen!
-      puts "Sorry, please enter one of the names below."
+      pastel = Pastel.new
+      puts pastel.bright_red("Sorry, please enter one of the names below.")
       puts
       self.delete_pairing(current_user)
     end
@@ -289,7 +294,8 @@ class Mentee < ActiveRecord::Base
       bar.advance(1)
     end
     puts
-    puts "You are no longer paired with #{ deleted_partner }."
+    pastel = Pastel.new
+    puts pastel.bright_green("You are no longer paired with #{ deleted_partner }.")
     puts
     self.press_any(current_user)
   end

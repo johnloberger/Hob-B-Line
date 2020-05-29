@@ -1,6 +1,7 @@
 require 'tty-prompt'
 require 'tty-spinner'
 require 'tty-progressbar'
+require 'pastel'
 require 'tty-box'
 require 'bundler'
 Bundler.require

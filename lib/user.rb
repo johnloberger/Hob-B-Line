@@ -5,7 +5,8 @@ module User
             Age: #{age}
             Gender: #{gender}
             Favorite Hobby: #{favorite_hobby}
-            Location: #{location}"
+            Location: #{location}
+            "
         end
     end
 
@@ -36,7 +37,8 @@ module User
             current_user.save
             current_user.reload
             puts
-            puts "Your new favorite hobby is #{current_user.favorite_hobby}! Please press enter to return to menu."
+            pastel = Pastel.new
+            puts pastel.bright_green("Your new favorite hobby is #{current_user.favorite_hobby}! Please press enter to return.")
             puts
             press_any(current_user)
           end 

@@ -81,6 +81,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  pastel
   pry
   require_all
   sinatra-activerecord
