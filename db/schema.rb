@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200526181315) do
+ActiveRecord::Schema.define(version: 20200529011401) do
 
   create_table "mentees", force: :cascade do |t|
     t.string  "full_name"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 20200526181315) do
     t.integer  "mentee_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string   "status"
   end
 
 end

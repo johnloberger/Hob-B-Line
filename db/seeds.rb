@@ -58,7 +58,7 @@ russell = Mentee.create(full_name: "Russell Fredrickson", age: 12, gender: "male
 jake = Mentee.create(full_name: "Jake Marcionette", age: 12, gender: "male", favorite_hobby: "writing", location: "New York", guardian_contact: "Mike Marcionette")
 
 # Pairing Seeds
-pairing_one = Pairing.create(mentor: serena, mentee: coco)
-pairing_two = Pairing.create(mentor: steven, mentee: mike)
-pairing_three = Pairing.create(mentor: john, mentee: sully)
-pairing_four = Pairing.create(mentor: john, mentee: mike)
+pairing_one = Pairing.create(mentor: serena, mentee: coco, status: "Pending")
+pairing_two = Pairing.create(mentor: steven, mentee: mike, status: "Pending")
+pairing_three = Pairing.create(mentor: john, mentee: sully, status: "Pending")
+pairing_four = Pairing.create(mentor: john, mentee: mike, status: "Pending")
