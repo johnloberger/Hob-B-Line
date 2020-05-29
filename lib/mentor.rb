@@ -1,4 +1,3 @@
-require 'pry'
 class Mentor < ActiveRecord::Base
   extend User::ClassMethods
   include User::InstanceMethods
