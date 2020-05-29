@@ -1,3 +1,4 @@
+require 'pry'
 class Mentor < ActiveRecord::Base
   extend User::ClassMethods
   include User::InstanceMethods
@@ -14,6 +15,7 @@ class Mentor < ActiveRecord::Base
     Please select an option below:
     \n") do |menu|
       menu.choice 'See My Mentees'
+      menu.choice 'Approve a Mentee'
       menu.choice 'Delete a Pairing'
       menu.choice 'Change My Hobby'
       menu.choice 'Exit'
@@ -21,6 +23,8 @@ class Mentor < ActiveRecord::Base
   
     if menu_option == 'See My Mentees'
       self.see_my_mentees(current_user)
+    elsif menu_option == 'Approve a Mentee'
+      self.approve_mentee(current_user)
     elsif menu_option == 'Delete a Pairing'
       clear_screen!
       self.delete_pairing(current_user)
@@ -34,15 +38,51 @@ class Mentor < ActiveRecord::Base
     end  
   end 
 
+  def self.approve_mentee(current_user)
+    clear_screen!
+    pending_pairings = current_user.pairings.where("status = 'Pending'")
+    # binding.pry
+    if pending_pairings == []
+      puts "Sorry. You currently don't have any pending mentees."
+      puts
+      self.press_any(current_user)
+    else
+    puts "The following mentees are pending for your approval."
+    puts
+    puts pending_pairings.map &:mentee
+    puts
+    puts "Enter the full name of the mentee you wish to approve, or 'exit'."
+    puts
+    print "Full Name: "
+    approved_name = gets.chomp
+    if approved_name == "exit"
+      self.user_menu(current_user)
+    end 
+    pairing_to_approve = pending_pairings.find do |pairing|
+      pairing.mentor == current_user && pairing.mentee.full_name == approved_name
+    end
+    pairing_to_approve.status = "Approved"
+    pairing_to_approve.save
+    pairing_to_approve.reload
+    current_user.save
+    current_user.reload
+    end
+    clear_screen!
+    puts "Your pairing with #{approved_name} has been approved!"
+    puts
+    self.press_any(current_user)
+  end 
+
   def self.see_my_mentees(current_user)
     clear_screen!
-    if current_user.mentees == []
+    approved_pairings = current_user.pairings.where("status = 'Approved'")
+    if approved_pairings == []
       puts "Sorry. You currently don't have any mentees."
       puts
     else
       puts "These are your mentees:"
       puts
-      puts current_user.mentees
+      puts approved_pairings.map &:mentee
       puts
     end 
     self.press_any(current_user)
@@ -51,15 +91,18 @@ class Mentor < ActiveRecord::Base
   def self.create_user 
     new_user = Mentor.new
     puts "Enter your full name to begin."
+    puts
     print "Full Name: "
     new_user.full_name = gets.chomp
     puts
     puts "Enter your age."
+    puts
     print "Age: "
     age = gets.chomp
     age = age.to_i
     while Float === age || String === age || age < 18 do
       puts "Please enter a valid age. You must be 18 years or older to use this website."
+      puts
       print "Age: "
       age = gets.chomp 
       age = age.to_i
@@ -67,17 +110,21 @@ class Mentor < ActiveRecord::Base
     new_user.age = age
     puts
     puts "Enter your gender."
+    puts
     print "Gender: "
     new_user.gender = gets.chomp
     puts
     puts "Enter your location."
+    puts
     print "Location: "
     new_user.location = gets.chomp 
     puts
     puts "Enter your hobby."
+    puts
     print "Hobby: "
     new_user.favorite_hobby = gets.chomp
     new_user.save
+    puts
     puts "Press any key to continue." 
     current_user = new_user
     clear_screen!

@@ -34,6 +34,10 @@ class Mentee < ActiveRecord::Base
       mentor.full_name == mentor_choice
     end 
     current_user.mentors << pairing_mentor
+    new_pairing = Pairing.last
+    new_pairing.status = "Pending"
+    new_pairing.save
+    new_pairing.reload
     clear_screen!
     bar = TTY::ProgressBar.new("Pairing [:bar]", total: 30)
       30.times do
@@ -103,15 +107,18 @@ class Mentee < ActiveRecord::Base
   def self.create_user 
     new_user = Mentee.new
     puts "Enter your full name to begin."
+    puts
     print "Full Name: "
     new_user.full_name = gets.chomp
     puts
     puts "Enter your age."
+    puts
     print "Age: "
     age = gets.chomp
     age = age.to_i
     while Float === age || String === age || age < 10 do
       puts "Please enter a valid age. You must be 10 years or older to use this website."
+      puts
       print "Age: "
       age = gets.chomp 
       age = age.to_i
@@ -119,19 +126,23 @@ class Mentee < ActiveRecord::Base
     new_user.age = age
     puts
     puts "Enter your gender."
+    puts
     print "Gender: "
     new_user.gender = gets.chomp
     puts
     puts "Enter your location."
+    puts
     print "Location: "
     new_user.location = gets.chomp 
     puts
     puts "Enter your hobby."
+    puts
     print "Hobby: "
     new_user.favorite_hobby = gets.chomp
     if new_user.age < 18
       puts
       puts "Please enter the name of a parent or guardian."
+      puts
       print "Guardian name: "
       new_user.guardian_contact = gets.chomp
     end 
