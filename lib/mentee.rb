@@ -75,6 +75,7 @@ class Mentee < ActiveRecord::Base
       menu.choice 'Create a Pairing'
       menu.choice 'Delete a Pairing'
       menu.choice 'Change My Hobby'
+      menu.choice 'Log Out'
       menu.choice 'Exit'
     end
 
@@ -88,6 +89,8 @@ class Mentee < ActiveRecord::Base
       self.delete_pairing(current_user)
     elsif menu_option == 'Change My Hobby'
       self.change_my_hobby(current_user)
+    elsif menu_option == 'Log Out'
+      main_menu
     else
       clear_screen!
       puts "Goodbye #{current_user.full_name}!  Enjoy #{current_user.favorite_hobby}!"
@@ -102,12 +105,12 @@ class Mentee < ActiveRecord::Base
     see_mentors = prompt.select("Please select an option below.
     \n") do |menu|
     menu.choice 'See My Mentors'
-    menu.choice 'See Pending Mentors'
+    menu.choice 'See My Pending Mentors'
   end
 
     if see_mentors == 'See My Mentors'
       self.see_my_mentors(current_user)
-    elsif see_mentors == 'See Pending Mentors'
+    elsif see_mentors == 'See My Pending Mentors'
       self.see_pending_mentors(current_user)
     end
   end 
@@ -170,12 +173,20 @@ class Mentee < ActiveRecord::Base
     print "Age: "
     age = gets.chomp
     age = age.to_i
-    while Float === age || String === age || age < 10 do
-      puts "Please enter a valid age. You must be 10 years or older to use this website."
+    while Float === age || String === age || age < 1 do
+      puts
+      puts "Please enter a valid age."
       puts
       print "Age: "
       age = gets.chomp 
       age = age.to_i
+    end 
+    if age < 10
+      puts
+      puts "You must be 10 years or older to be a mentee on this website."
+      puts "Please come back in #{10 - age} years!"
+      puts
+      exit 
     end 
     new_user.age = age
     puts
@@ -246,6 +257,11 @@ class Mentee < ActiveRecord::Base
   end
 
   def self.delete_pairing(current_user)
+    if current_user.mentors == []
+      puts "You don't have any pairings!"
+      puts 
+      self.press_any(current_user)
+    end 
     puts current_user.mentors 
     puts 
     puts "Please enter the full name of the mentee to be removed, or type 'exit'"

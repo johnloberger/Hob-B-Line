@@ -24,18 +24,22 @@ class Mentor < ActiveRecord::Base
       menu.choice 'Approve a Mentee'
       menu.choice 'Delete a Pairing'
       menu.choice 'Change My Hobby'
+      menu.choice 'Log Out'
       menu.choice 'Exit'
     end
   
     if menu_option == 'See My Mentees'
       self.see_my_mentees(current_user)
     elsif menu_option == 'Approve a Mentee'
+      clear_screen!
       self.approve_mentee(current_user)
     elsif menu_option == 'Delete a Pairing'
       clear_screen!
       self.delete_pairing(current_user)
     elsif menu_option == 'Change My Hobby'
       self.change_my_hobby(current_user)
+    elsif menu_option == 'Log Out'
+      main_menu
     else
       clear_screen!
       puts "Goodbye #{current_user.full_name}!  Enjoy #{current_user.favorite_hobby}!"
@@ -45,7 +49,6 @@ class Mentor < ActiveRecord::Base
   end 
 
   def self.approve_mentee(current_user)
-    clear_screen!
     pending_pairings = current_user.pairings.where("status = 'Pending'")
     # binding.pry
     if pending_pairings == []
@@ -55,14 +58,22 @@ class Mentor < ActiveRecord::Base
     else
     puts "The following mentees are pending for your approval."
     puts
-    puts pending_pairings.map &:mentee
+    pending_pairings_mentees = pending_pairings.map &:mentee
+    puts pending_pairings_mentees
     puts
     puts "Enter the full name of the mentee you wish to approve, or 'exit'."
     puts
     print "Full Name: "
     approved_name = gets.chomp
+    pending_pairings_mentees_names = pending_pairings_mentees.map  &:full_name
     if approved_name == "exit"
       self.user_menu(current_user)
+    end 
+    if pending_pairings_mentees_names.include?(approved_name) == false
+      clear_screen!
+      puts "Please enter one of the below names."
+      puts
+      self.approve_mentee(current_user)
     end 
     pairing_to_approve = pending_pairings.find do |pairing|
       pairing.mentor == current_user && pairing.mentee.full_name == approved_name
@@ -120,12 +131,20 @@ class Mentor < ActiveRecord::Base
     print "Age: "
     age = gets.chomp
     age = age.to_i
-    while Float === age || String === age || age < 18 do
-      puts "Please enter a valid age. You must be 18 years or older to use this website."
+    while Float === age || String === age || age < 1 do
+      puts
+      puts "Please enter a valid age."
       puts
       print "Age: "
       age = gets.chomp 
       age = age.to_i
+    end 
+    if age < 18 
+      puts
+      puts "You must be 18 years or older to be a mentor on this website."
+      puts "Please come back in #{18 - age} years!"
+      puts 
+      exit 
     end 
     new_user.age = age
     puts
@@ -192,6 +211,11 @@ class Mentor < ActiveRecord::Base
   end
     
   def self.delete_pairing(current_user)
+    if current_user.mentees == []
+      puts "You don't have any pairings!"
+      puts 
+      self.press_any(current_user)
+    end 
     puts current_user.mentees 
     puts 
     puts "Please enter the full name of the mentee to be removed, or type 'exit'"

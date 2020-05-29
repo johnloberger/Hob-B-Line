@@ -5,7 +5,7 @@ def clear_screen!
   puts "\e[H\e[2J"
 end
 
-
+def main_menu
 prompt = TTY::Prompt.new
 clear_screen!
 welcome = prompt.select("
@@ -40,7 +40,9 @@ elsif welcome == "┌──────┐
   └──────┘"
   Mentee.mentee_login
 end
+end 
 
+main_menu
 
 
 
