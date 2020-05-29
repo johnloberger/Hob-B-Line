@@ -128,7 +128,7 @@ class Mentee < ActiveRecord::Base
       spinner.stop('Done!')
       clear_screen!
     pending_pairings = current_user.pairings.where("status = 'Pending'")
-    if approved_pairings == []
+    if pending_pairings == []
       puts "You don't have any pending mentors."
       puts
     else
