@@ -50,7 +50,6 @@ class Mentor < ActiveRecord::Base
 
   def self.approve_mentee(current_user)
     pending_pairings = current_user.pairings.where("status = 'Pending'")
-    # binding.pry
     if pending_pairings == []
       puts "Sorry. You currently don't have any pending mentees."
       puts
@@ -60,7 +59,6 @@ class Mentor < ActiveRecord::Base
     puts
     pending_pairings_mentees = pending_pairings.map &:mentee
     puts pending_pairings_mentees
-    puts
     puts "Enter the full name of the mentee you wish to approve, or 'exit'."
     puts
     print "Full Name: "
@@ -71,7 +69,8 @@ class Mentor < ActiveRecord::Base
     end 
     if pending_pairings_mentees_names.include?(approved_name) == false
       clear_screen!
-      puts "Please enter one of the below names."
+      pastel = Pastel.new
+      puts pastel.bright_red("Please enter one of the below names.")
       puts
       self.approve_mentee(current_user)
     end 
@@ -91,7 +90,8 @@ class Mentor < ActiveRecord::Base
       bar.advance(1)
     end
     puts
-    puts "Your pairing with #{approved_name} has been approved!"
+    pastel = Pastel.new
+    puts pastel.bright_green("Your pairing with #{approved_name} has been approved!")
     puts
     self.press_any(current_user)
   end 
@@ -114,7 +114,6 @@ class Mentor < ActiveRecord::Base
       puts "These are your mentees:"
       puts
       puts approved_pairings.map &:mentee
-      puts
     end 
     self.press_any(current_user)
   end 
@@ -133,7 +132,8 @@ class Mentor < ActiveRecord::Base
     age = age.to_i
     while Float === age || String === age || age < 1 do
       puts
-      puts "Please enter a valid age."
+      pastel = Pastel.new
+      puts pastel.bright_red("Please enter a valid age.")
       puts
       print "Age: "
       age = gets.chomp 
@@ -141,7 +141,8 @@ class Mentor < ActiveRecord::Base
     end 
     if age < 18 
       puts
-      puts "You must be 18 years or older to be a mentor on this website."
+      pastel = Pastel.new
+      puts pastel.bright_red("You must be 18 years or older to be a mentor on this website.")
       puts "Please come back in #{18 - age} years!"
       puts 
       exit 
@@ -164,10 +165,9 @@ class Mentor < ActiveRecord::Base
     new_user.favorite_hobby = gets.chomp
     new_user.save
     puts
-    puts "Press 'enter' to continue." 
     current_user = new_user
-    clear_screen!
-    puts "Welcome #{new_user.full_name}! Your account has been created." 
+    pastel = Pastel.new
+    puts pastel.bright_green("Welcome #{new_user.full_name}! Your account has been created.") 
     puts
     self.press_any(current_user)
   end 
@@ -201,7 +201,8 @@ class Mentor < ActiveRecord::Base
       
     while !current_user do
       clear_screen!
-      puts "Please enter a valid name."
+      pastel = Pastel.new
+      puts pastel.bright_red("Please enter a valid name.")
       puts
       print "Full Name: "
       entered_name = gets.chomp
@@ -230,7 +231,8 @@ class Mentor < ActiveRecord::Base
     end 
     if deleted_mentee == []
       clear_screen!
-      puts "Sorry, please enter one of the names below."
+      pastel = Pastel.new
+      puts pastel.bright_red("Sorry, please enter one of the names below.")
       puts
       self.delete_pairing(current_user)
     end
@@ -243,7 +245,8 @@ class Mentor < ActiveRecord::Base
       bar.advance(1)
     end
     puts
-    puts "You are no longer paired with #{ deleted_partner }."
+    pastel = Pastel.new
+    puts pastel.bright_green("You are no longer paired with #{ deleted_partner }.")
     puts
     self.press_any(current_user)
   end
