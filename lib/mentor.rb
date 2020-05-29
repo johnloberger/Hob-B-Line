@@ -10,7 +10,13 @@ class Mentor < ActiveRecord::Base
     clear_screen!
     prompt = TTY::Prompt.new
     menu_option = prompt.select("
-    Welcome #{ current_user.full_name }!
+    You are logged in as: #{ current_user.full_name }
+    \n
+    ███    ███     ███████     ███    ██     ██    ██ 
+    ████  ████     ██          ████   ██     ██    ██ 
+    ██ ████ ██     █████       ██ ██  ██     ██    ██ 
+    ██  ██  ██     ██          ██  ██ ██     ██    ██ 
+    ██      ██     ███████     ██   ████      ██████ 
     \n
     Please select an option below:
     \n") do |menu|
@@ -68,6 +74,12 @@ class Mentor < ActiveRecord::Base
     current_user.reload
     end
     clear_screen!
+    bar = TTY::ProgressBar.new("Approving [:bar]", total: 30)
+      30.times do
+      sleep(0.05)
+      bar.advance(1)
+    end
+    puts
     puts "Your pairing with #{approved_name} has been approved!"
     puts
     self.press_any(current_user)
@@ -75,6 +87,14 @@ class Mentor < ActiveRecord::Base
 
   def self.see_my_mentees(current_user)
     clear_screen!
+    puts
+    puts
+    puts
+    spinner = TTY::Spinner.new("           Loading :spinner  ", format: :dots)
+      spinner.auto_spin 
+      sleep(1)
+      spinner.stop('Done!')
+      clear_screen!
     approved_pairings = current_user.pairings.where("status = 'Approved'")
     if approved_pairings == []
       puts "Sorry. You currently don't have any mentees."
@@ -125,10 +145,10 @@ class Mentor < ActiveRecord::Base
     new_user.favorite_hobby = gets.chomp
     new_user.save
     puts
-    puts "Press any key to continue." 
+    puts "Press 'enter' to continue." 
     current_user = new_user
     clear_screen!
-    puts "Welcome #{ new_user.full_name }!"
+    puts "Welcome #{new_user.full_name}! Your account has been created." 
     puts
     self.press_any(current_user)
   end 
@@ -174,7 +194,7 @@ class Mentor < ActiveRecord::Base
   def self.delete_pairing(current_user)
     puts current_user.mentees 
     puts 
-    puts "Please enter the full name of the mentee you would like to no longer be paired with or type 'exit' to return to the menu."
+    puts "Please enter the full name of the mentee to be removed, or type 'exit'"
     puts
     print "Full Name: "
     deleted_partner = gets.chomp
@@ -199,7 +219,7 @@ class Mentor < ActiveRecord::Base
       bar.advance(1)
     end
     puts
-    puts "You are no longer paired with #{ deleted_partner }. Please press enter to return to menu."
+    puts "You are no longer paired with #{ deleted_partner }."
     puts
     self.press_any(current_user)
   end

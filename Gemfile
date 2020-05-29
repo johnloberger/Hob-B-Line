@@ -7,3 +7,5 @@ gem "pry"
 gem "require_all"
 gem 'tty-prompt'
 gem 'tty-progressbar'
+gem 'tty-spinner'
+gem 'tty-box'
